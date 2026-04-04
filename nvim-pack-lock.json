@@ -1,0 +1,8 @@
+{
+  "plugins": {
+    "jb.nvim": {
+      "rev": "e580734e50c2502c78c61299537c8aae0bf89563",
+      "src": "https://github.com/nickkadutskyi/jb.nvim"
+    }
+  }
+}
