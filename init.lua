@@ -1,4 +1,10 @@
-require("config")
+vim.pack.add {
+	'https://github.com/nickkadutskyi/jb.nvim',
+}
+
+
+require("user.main") -- require("config") would search for lua/config/init.lua
+
 
 if vim.g.neovide then
     	local os_name = vim.uv.os_uname().sysname
@@ -13,3 +19,6 @@ if vim.g.neovide then
 
 	vim.g.neovide_cursor_vfx_mode = "railgun"
 end
+
+
+
