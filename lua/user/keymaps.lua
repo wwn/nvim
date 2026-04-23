@@ -4,8 +4,8 @@ local opts = { noremap = true, silent = true }
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
-
 map("i", "jj", "<Esc>", opts)
+map("n", "<leader>e", "<cmd>Neotree toggle<cr>", opts)
 
 --[[
 map("n", "<leader>w", "<cmd>w<cr>", opts)

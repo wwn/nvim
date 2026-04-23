@@ -23,5 +23,5 @@ opt.tabstop = 4               -- tab width
 opt.shiftwidth = 4            -- indent width
 opt.softtabstop = 4           -- soft tab stop
 opt.expandtab = true          -- use spaces instead of tabs
-opt.smartindent = true        -- smart auto-indenting
+-- opt.smartindent = true        -- smart auto-indenting
 opt.autoindent = true         -- copy indent from current line

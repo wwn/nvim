@@ -3,6 +3,22 @@
     "jb.nvim": {
       "rev": "e580734e50c2502c78c61299537c8aae0bf89563",
       "src": "https://github.com/nickkadutskyi/jb.nvim"
+    },
+    "lualine.nvim": {
+      "rev": "a905eeebc4e63fdc48b5135d3bf8aea5618fb21c",
+      "src": "https://github.com/nvim-lualine/lualine.nvim"
+    },
+    "neo-tree.nvim": {
+      "rev": "4d0828d95adaf4250c1373d2cd9318d3509712b7",
+      "src": "https://github.com/nvim-neo-tree/neo-tree.nvim"
+    },
+    "nui.nvim": {
+      "rev": "de740991c12411b663994b2860f1a4fd0937c130",
+      "src": "https://github.com/MunifTanjim/nui.nvim"
+    },
+    "plenary.nvim": {
+      "rev": "74b06c6c75e4eeb3108ec01852001636d85a932b",
+      "src": "https://github.com/nvim-lua/plenary.nvim"
     }
   }
 }
