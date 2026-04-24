@@ -1,3 +1,5 @@
+vim.loader.enable()
+
 vim.pack.add {
     'https://github.com/nickkadutskyi/jb.nvim',
     'https://github.com/nvim-lualine/lualine.nvim',
