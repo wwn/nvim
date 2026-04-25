@@ -60,7 +60,7 @@ update plugins
 <pre>:lua vim.pack.update(nil, { force = true })</pre>
 
 uninstall plugin
-<pre>vim.pack.del({ 'plugin-name' })</pre>
+<pre>lua vim.pack.del({ 'plugin-name' })</pre>
 
 ## Utilities
 install some stuff
