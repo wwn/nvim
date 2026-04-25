@@ -9,6 +9,15 @@ The `<leader>` key is set to `Space`.
 | `jj` | Insert | Escape (Return to Normal mode) |
 | `<leader>e` | Normal | Toggle Neo-tree (File Explorer) |
 
+### Telescope Shortcuts
+
+| Shortcut | Action |
+| :--- | :--- |
+| `<leader>ff` | Find files |
+| `<leader>fg` | Live grep (search text) |
+| `<leader>fb` | List buffers |
+| `<leader>fh` | Help tags |
+
 ### Neo-tree Shortcuts
 
 When the Neo-tree sidebar is focused, the following default shortcuts are available:
@@ -35,6 +44,7 @@ When the Neo-tree sidebar is focused, the following default shortcuts are availa
 - **[jb.nvim](https://github.com/nickkadutskyi/jb.nvim)**: JetBrains-inspired colorscheme.
 - **[lualine.nvim](https://github.com/nvim-lualine/lualine.nvim)**: A fast and customizable statusline.
 - **[neo-tree.nvim](https://github.com/nvim-neo-tree/neo-tree.nvim)**: Neovim plugin to manage the file system.
+- **[telescope.nvim](https://github.com/nvim-telescope/telescope.nvim)**: A highly extendable fuzzy finder over lists.
 - **[plenary.nvim](https://github.com/nvim-lua/plenary.nvim)**: Useful lua functions used by many plugins.
 - **[nui.nvim](https://github.com/MunifTanjim/nui.nvim)**: UI Component Library for Neovim.
 
@@ -44,8 +54,6 @@ When the Neo-tree sidebar is focused, the following default shortcuts are availa
 - **Theme**: JetBrains (jb).
 - **Statusline**: Lualine with auto-theme.
 
-
-
-##
+## Utilities
 show all files except hidden ones in current directory:
 <pre>find . -type d -path '*/.*' -prune -o -type f -exec  printf "\033[1;32m\n[PATH: %s]\033[0m\n" {} \; -exec cat {} \;</pre>

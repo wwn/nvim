@@ -3,6 +3,7 @@ require("user.options")
 require("user.autocmds")
 require("user.lualine")
 require("user.neotree")
+require("user.telescope")
 
 --[[
 require("user.diagnostics")
