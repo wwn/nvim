@@ -1,4 +1,4 @@
--- 2-space indentation for web/frontend filetypes
+-- space indentation for web/frontend filetypes
 vim.api.nvim_create_autocmd("FileType", {
     pattern = {
         "typescript", "typescriptreact",

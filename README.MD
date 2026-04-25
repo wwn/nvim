@@ -54,6 +54,26 @@ When the Neo-tree sidebar is focused, the following default shortcuts are availa
 - **Theme**: JetBrains (jb).
 - **Statusline**: Lualine with auto-theme.
 
+## Commands
+update plugins
+<pre>:lua vim.pack.update()</pre>
+<pre>:lua vim.pack.update(nil, { force = true })</pre>
+
+uninstall plugin
+<pre>vim.pack.del({ 'plugin-name' })</pre>
+
 ## Utilities
+install some stuff
+<pre>winget install BurntSushi.ripgrep.MSVC winget install sharkdp.fd</pre>
+<pre>brew install ripgrep fd</pre>
+
 show all files except hidden ones in current directory:
 <pre>find . -type d -path '*/.*' -prune -o -type f -exec  printf "\033[1;32m\n[PATH: %s]\033[0m\n" {} \; -exec cat {} \;</pre>
+
+
+### Plugin Dir
+- jb.nvim
+- lualine.nvim
+- neo-tree.nvim
+- nui.nvim
+- telescope.nvim
