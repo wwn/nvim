@@ -58,6 +58,8 @@ When the Neo-tree sidebar is focused, the following default shortcuts are availa
 update plugins
 <pre>:lua vim.pack.update()</pre>
 <pre>:lua vim.pack.update(nil, { force = true })</pre>
+oder confirm with  <pre>:write</pre>
+
 
 uninstall plugin
 <pre>lua vim.pack.del({ 'plugin-name' })</pre>

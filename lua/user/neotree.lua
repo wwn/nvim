@@ -7,4 +7,5 @@ require("neo-tree").setup({
             enabled = true,
         },
     },
+    sort_case_insensitive = true
 })
