@@ -46,3 +46,6 @@ opt.autoindent = true
 
 -- native autocompletion
 opt.autocomplete = true
+
+-- conceal (needed for render-markdown.nvim)
+opt.conceallevel = 2

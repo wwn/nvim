@@ -39,6 +39,16 @@ When the Neo-tree sidebar is focused, the following default shortcuts are availa
 | `R` | Refresh explorer |
 | `?` | Help menu |
 
+### Render-Markdown Shortcuts
+
+| Command | Aktion |
+| :--- | :--- |
+| `:RenderMarkdown toggle` | Rendering ein/ausschalten |
+| `:RenderMarkdown enable` | Rendering einschalten |
+| `:RenderMarkdown disable` | Rendering ausschalten |
+| `:RenderMarkdown expand` | Conceal-Level erhöhen (mehr gerendert) |
+| `:RenderMarkdown contract` | Conceal-Level verringern (mehr Rohtext) |
+
 ## Plugins
 
 - **[jb.nvim](https://github.com/nickkadutskyi/jb.nvim)**: JetBrains-inspired colorscheme.
@@ -47,6 +57,8 @@ When the Neo-tree sidebar is focused, the following default shortcuts are availa
 - **[telescope.nvim](https://github.com/nvim-telescope/telescope.nvim)**: A highly extendable fuzzy finder over lists.
 - **[plenary.nvim](https://github.com/nvim-lua/plenary.nvim)**: Useful lua functions used by many plugins.
 - **[nui.nvim](https://github.com/MunifTanjim/nui.nvim)**: UI Component Library for Neovim.
+- **[render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim)**: Rendert Markdown direkt im Buffer (Headings, Tabellen, Checkboxen, Code-Blöcke).
+- **Built-in Tree-sitter** (Neovim 0.12): Syntax-Highlighting für Markdown und weitere Sprachen ohne externes Plugin.
 
 ## Appearance
 
@@ -56,26 +68,29 @@ When the Neo-tree sidebar is focused, the following default shortcuts are availa
 
 ## Commands
 update plugins
-<pre>:lua vim.pack.update()</pre>
-<pre>:lua vim.pack.update(nil, { force = true })</pre>
-oder confirm with  <pre>:write</pre>
-
+```vim
+:lua vim.pack.update()
+:lua vim.pack.update(nil, { force = true })
+```
+oder confirm with
+```vim
+:write
+```
 
 uninstall plugin
-<pre>lua vim.pack.del({ 'plugin-name' })</pre>
+```lua
+lua vim.pack.del({ 'plugirendern-name' })
+```
 
 ## Utilities
 install some stuff
-<pre>winget install BurntSushi.ripgrep.MSVC winget install sharkdp.fd</pre>
-<pre>brew install ripgrep fd</pre>
+```sh
+winget install BurntSushi.ripgrep.MSVC winget install sharkdp.fd
+brew install ripgrep fd
+```
 
 show all files except hidden ones in current directory:
-<pre>find . -type d -path '*/.*' -prune -o -type f -exec  printf "\033[1;32m\n[PATH: %s]\033[0m\n" {} \; -exec cat {} \;</pre>
+```sh
+find . -type d -path '*/.*' -prune -o -type f -exec printf "\033[1;32m\n[PATH: %s]\033[0m\n" {} \; -exec cat {} \;
+```
 
-
-### Plugin Dir
-- jb.nvim
-- lualine.nvim
-- neo-tree.nvim
-- nui.nvim
-- telescope.nvim

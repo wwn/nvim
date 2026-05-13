@@ -8,8 +8,11 @@ vim.pack.add {
     'https://github.com/nvim-neo-tree/neo-tree.nvim',
     'https://github.com/nvim-lua/plenary.nvim',
     'https://github.com/MunifTanjim/nui.nvim',
+
     -- fuzzy finder
     'https://github.com/nvim-telescope/telescope.nvim',
+    -- markdown in-editor preview (renders tables, bold, links, checkboxes)
+    'https://github.com/MeanderingProgrammer/render-markdown.nvim',
 }
 
 require("user.main") -- require("config") would search for lua/config/init.lua

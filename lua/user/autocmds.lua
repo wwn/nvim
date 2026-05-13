@@ -1,3 +1,6 @@
+-- .md -> uppercase .MD extension → markdown filetype
+vim.filetype.add({ extension = { MD = "markdown" } })
+
 -- space indentation for web/frontend filetypes
 vim.api.nvim_create_autocmd("FileType", {
     pattern = {
