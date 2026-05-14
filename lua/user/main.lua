@@ -6,6 +6,7 @@ require("user.markdown")
 require("user.lualine")
 require("user.neotree")
 require("user.telescope")
+require("user.alpha")
 
 --[[
 require("user.diagnostics")

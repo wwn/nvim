@@ -4,6 +4,9 @@ vim.pack.add {
     'https://github.com/nickkadutskyi/jb.nvim',
     'https://github.com/nvim-lualine/lualine.nvim',
 
+    -- icons (required by neo-tree, lualine, telescope, render-markdown)
+    'https://github.com/nvim-tree/nvim-web-devicons',
+
     -- neo-tree
     'https://github.com/nvim-neo-tree/neo-tree.nvim',
     'https://github.com/nvim-lua/plenary.nvim',
@@ -13,6 +16,9 @@ vim.pack.add {
     'https://github.com/nvim-telescope/telescope.nvim',
     -- markdown in-editor preview (renders tables, bold, links, checkboxes)
     'https://github.com/MeanderingProgrammer/render-markdown.nvim',
+
+    --dashbboard
+    'https://github.com/goolord/alpha-nvim',
 }
 
 require("user.main") -- require("config") would search for lua/config/init.lua
@@ -30,4 +36,7 @@ if vim.g.neovide then
     end
 
     vim.g.neovide_cursor_vfx_mode = "railgun"
+
+    -- transparent bg
+    vim.g.neovide_opacityq = 0.85
 end
