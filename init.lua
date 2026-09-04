@@ -38,5 +38,5 @@ if vim.g.neovide then
     vim.g.neovide_cursor_vfx_mode = "railgun"
 
     -- transparent bg
-    vim.g.neovide_opacityq = 0.85
+    vim.g.neovide_opacity = 0.85
 end

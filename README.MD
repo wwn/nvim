@@ -78,14 +78,14 @@ oder confirm with
 ```
 
 uninstall plugin
-```lua
-lua vim.pack.del({ 'plugirendern-name' })
+```vim
+:lua vim.pack.del({ 'plugin-name' })
 ```
 
 ## Utilities
 install some stuff
 ```sh
-winget install BurntSushi.ripgrep.MSVC winget install sharkdp.fd
+winget install BurntSushi.ripgrep.MSVC sharkdp.fd
 brew install ripgrep fd
 ```
 

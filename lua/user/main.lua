@@ -12,5 +12,9 @@ require("user.alpha")
 require("user.diagnostics")
 --]]
 
-vim.cmd("cd ~")
+-- nur ins Home wechseln, wenn nvim ohne Datei-Argument gestartet wurde
+-- (sonst suchen Telescope und Neo-tree im Home statt im Projekt)
+if vim.fn.argc() == 0 then
+    vim.cmd("cd ~")
+end
 vim.cmd.colorscheme('jb')
