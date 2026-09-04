@@ -51,3 +51,19 @@ opt.autoindent = true
 
 -- native autocompletion
 opt.autocomplete = true
+
+-- persistent undo across sessions (~/AppData/Local/nvim-data/undo)
+opt.undofile = true
+
+-- always reserve the sign column so text doesn't jump when signs appear
+opt.signcolumn = "yes"
+
+-- open splits right and below instead of left and above
+opt.splitright = true
+opt.splitbelow = true
+
+-- faster CursorHold (swap file write, plugin timers)
+opt.updatetime = 250
+
+-- ask about unsaved changes instead of failing on :q
+opt.confirm = true

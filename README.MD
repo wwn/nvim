@@ -58,7 +58,9 @@ When the Neo-tree sidebar is focused, the following default shortcuts are availa
 - **[plenary.nvim](https://github.com/nvim-lua/plenary.nvim)**: Useful lua functions used by many plugins.
 - **[nui.nvim](https://github.com/MunifTanjim/nui.nvim)**: UI Component Library for Neovim.
 - **[render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim)**: Rendert Markdown direkt im Buffer (Headings, Tabellen, Checkboxen, Code-Blöcke).
-- **Built-in Tree-sitter** (Neovim 0.12): Syntax-Highlighting für Markdown und weitere Sprachen ohne externes Plugin.
+- **[nvim-web-devicons](https://github.com/nvim-tree/nvim-web-devicons)**: Dateityp-Icons, benötigt von Neo-tree, Lualine, Telescope und render-markdown.
+- **[alpha-nvim](https://github.com/goolord/alpha-nvim)**: Startbildschirm mit der Tastenkürzel-Übersicht (`lua/user/alpha.lua`).
+- **Built-in Tree-sitter** (Neovim 0.12): bringt die Parser `c`, `lua`, `markdown`, `markdown_inline`, `query`, `vim` und `vimdoc` mit. Für andere Sprachen (TypeScript, JavaScript, HTML, CSS, JSON, YAML …) gibt es kein Treesitter-Highlighting, sondern nur die klassische Regex-Syntax — dafür wäre ein Parser-Plugin nötig.
 
 ## Appearance
 
