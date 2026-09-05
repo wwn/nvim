@@ -1,14 +1,14 @@
 -- ============================================================================
---  autocmds.lua — Filetype-Erkennung und filetype-abhängige Einstellungen
+--  autocmds.lua — filetype detection and filetype-dependent settings
 -- ============================================================================
 
--- Grossgeschriebene Endung ".MD" ebenfalls als Markdown erkennen.
--- (Neovim vergleicht die Endung case-sensitiv, auch auf Windows.)
+-- Also recognize the uppercase extension ".MD" as Markdown.
+-- (Neovim compares the extension case-sensitively, even on Windows.)
 vim.filetype.add({ extension = { MD = "markdown" } })
 
--- In Web-/Frontend-Dateien ist 2er-Einrückung Konvention (Prettier & Co.).
--- opt_local wirkt nur im jeweiligen Puffer, die globalen 4 aus options.lua
--- bleiben für alle anderen Filetypes bestehen.
+-- 2-space indentation is convention in web/frontend files (Prettier & co.).
+-- opt_local only affects the respective buffer; the global 4 from options.lua
+-- remain in effect for all other filetypes.
 vim.api.nvim_create_autocmd("FileType", {
     group = vim.api.nvim_create_augroup("user_indent", { clear = true }),
     pattern = {

@@ -1,35 +1,38 @@
 # ============================================================================
-#  nvim-health — prüft, ob diese Neovim-Config auf einer frischen Maschine
-#  sauber startet und :checkhealth fehlerfrei durchläuft.
+#  nvim-health — checks that this Neovim config starts cleanly on a fresh
+#  machine and that :checkhealth runs without errors.
 #
-#  Ablauf je Betriebssystem:
-#    1. Neovim (stable) installieren
-#    2. externe Tools installieren (git/ripgrep/fd — Telescope braucht sie)
-#    3. Config nach $XDG_CONFIG_HOME/nvim auschecken
-#    4. Erster Start: vim.pack.add() klont alle Plugins aus dem Lockfile
-#    5. Zweiter Start: darf nichts mehr auf stderr schreiben
-#    6. .github/ci/health.lua: Lockfile-Abgleich, Module, Tools, :checkhealth
+#  Steps per operating system:
+#    1. Install Neovim (stable)
+#    2. Install external tools (git/ripgrep/fd — Telescope needs them)
+#    3. Check out the config into $XDG_CONFIG_HOME/nvim
+#    4. First start: vim.pack.add() clones every plugin from the lockfile
+#    5. Second start: must no longer write anything to stderr
+#    6. .github/ci/health.lua: lockfile comparison, modules, tools, :checkhealth
 #
-#  Rot wird der Lauf nur bei ERROR. WARNINGs (fehlendes `trash`, abweichende
-#  Plugin-Revision …) stehen in der Job-Summary und im Artefakt.
+#  The run only turns red on ERROR. WARNINGs (missing `trash`, diverging
+#  plugin revision …) end up in the job summary and in the artifact.
 # ============================================================================
 name: nvim-health
 
 on:
-  # "**" statt "*", damit auch mehrstufige Namen wie feature/main/xyz greifen.
-  # Ein Pull Request braucht keinen eigenen Trigger: Checks hängen am Commit,
-  # der Push-Lauf desselben SHA taucht also im PR auf. "pull_request:" wäre
-  # hier nur ein zweiter Lauf pro Commit — wieder einschalten, falls einmal
-  # PRs aus Forks oder aus anders benannten Branches kommen sollen (dann
-  # prüft der PR-Lauf zusätzlich den Merge-Stand gegen main).
+  # Push runs for the day-to-day working branches. "**" (not "*") so that
+  # multi-level names like feature/main/xyz match too.
   push:
     branches:
-      - main
       - "feature/**"
       - "bugfix/**"
       - "chore/**"
-  # Montags früh: fängt Upstream-Plugin-Updates, die die Config brechen,
-  # bevor man selbst in ein kaputtes nvim läuft.
+  # develop and main are built only when a branch is merged into them via a
+  # pull request. GitHub signals a merge as a "closed" pull_request event, so
+  # we listen on "closed" and drop the non-merge case in the job-level "if".
+  pull_request:
+    types: [closed]
+    branches:
+      - develop
+      - main
+  # Early Monday: catches upstream plugin updates that break the config
+  # before you walk into a broken nvim yourself.
   schedule:
     - cron: "17 5 * * 1"
   workflow_dispatch:
@@ -42,12 +45,17 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  # Auf "v0.12.5" o.ä. pinnen, falls "stable" mal vorauseilt.
+  # Pin to "v0.12.5" or similar if "stable" ever races ahead.
   NVIM_VERSION: stable
 
 jobs:
   health:
     name: ${{ matrix.os }}
+    # Run for push/schedule/manual events, and for pull requests only when
+    # they were actually merged (not just closed).
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.merged == true
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -57,26 +65,29 @@ jobs:
       run:
         shell: bash
     env:
-      # Neovim beachtet die XDG-Variablen auch unter Windows. Damit liegt die
-      # Config im Workspace statt in ~/.config bzw. %LOCALAPPDATA%.
+      # Neovim honours the XDG variables on Windows too. This keeps the config
+      # in the workspace instead of ~/.config or %LOCALAPPDATA%.
       XDG_CONFIG_HOME: ${{ github.workspace }}/xdg/config
       XDG_DATA_HOME: ${{ github.workspace }}/xdg/data
       XDG_STATE_HOME: ${{ github.workspace }}/xdg/state
       XDG_CACHE_HOME: ${{ github.workspace }}/xdg/cache
-      # In einem run:-Step ist $TERM nicht gesetzt. Der Terminal-Abschnitt von
-      # :checkhealth ruft dann "infocmp -L" auf, das mit "environment variable
-      # TERM not set" abbricht und als ERROR gemeldet wird — eine Eigenheit des
-      # Runners, nicht der Config. xterm-256color liegt in ncurses-base und ist
-      # auf den Images vorhanden.
+      # In a run: step $TERM is not set. The terminal section of :checkhealth
+      # then calls "infocmp -L", which aborts with "environment variable TERM
+      # not set" and is reported as an ERROR — a quirk of the runner, not of
+      # the config. xterm-256color ships in ncurses-base and is present on the
+      # images.
       TERM: xterm-256color
 
     steps:
-      - name: Config auschecken
+      - name: Check out config
         uses: actions/checkout@v4
         with:
           path: xdg/config/nvim
+          # For a merged pull request, build the resulting state of the base
+          # branch (develop/main) rather than the PR merge ref.
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.ref || github.ref }}
 
-      - name: Neovim installieren (Linux)
+      - name: Install Neovim (Linux)
         if: runner.os == 'Linux'
         run: |
           set -euo pipefail
@@ -85,7 +96,7 @@ jobs:
           tar -C "$RUNNER_TEMP" -xzf "$RUNNER_TEMP/nvim.tar.gz"
           echo "$RUNNER_TEMP/nvim-linux-x86_64/bin" >> "$GITHUB_PATH"
 
-      - name: Neovim installieren (Windows)
+      - name: Install Neovim (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
@@ -94,78 +105,78 @@ jobs:
           Expand-Archive -Path "$env:RUNNER_TEMP\nvim.zip" -DestinationPath "$env:RUNNER_TEMP\nvim" -Force
           "$env:RUNNER_TEMP\nvim\nvim-win64\bin" | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
 
-      - name: ripgrep und fd installieren (Linux)
+      - name: Install ripgrep and fd (Linux)
         if: runner.os == 'Linux'
         run: |
           set -euo pipefail
           sudo apt-get update -qq
           sudo apt-get install -y -qq ripgrep fd-find
-          # Debian nennt das Binary "fdfind"; Telescope sucht zuerst nach "fd".
+          # Debian names the binary "fdfind"; Telescope looks for "fd" first.
           sudo ln -sf "$(command -v fdfind)" /usr/local/bin/fd
 
-      - name: ripgrep und fd installieren (Windows)
+      - name: Install ripgrep and fd (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: choco install ripgrep fd -y --no-progress
 
-      - name: Versionen
+      - name: Versions
         run: |
           nvim --version | sed -n "1,3p"
           git --version
           rg --version | sed -n "1p"
           fd --version
-          # Diagnose: läuft das nicht durch, meldet der Terminal-Abschnitt von
-          # :checkhealth später einen ERROR.
-          infocmp -L | sed -n "1p" || echo "infocmp fehlgeschlagen (TERM=$TERM)"
+          # Diagnostic: if this fails, the terminal section of :checkhealth
+          # reports an ERROR later on.
+          infocmp -L | sed -n "1p" || echo "infocmp failed (TERM=$TERM)"
 
-      # Erster Start: vim.pack.add() klont hier alle Plugins. Die Ausgabe darf
-      # laut sein — geprüft wird erst der zweite Start.
-      - name: Plugins installieren (erster Start)
+      # First start: vim.pack.add() clones every plugin here. The output may
+      # be noisy — only the second start is checked.
+      - name: Install plugins (first start)
         run: nvim --headless "+qa!"
 
-      - name: Startvorgang ohne Fehler
+      - name: Start without errors
         run: |
           set -uo pipefail
           mkdir -p "$RUNNER_TEMP/logs"
           nvim --headless "+qa!" 2> "$RUNNER_TEMP/logs/startup.log"
           status=$?
-          echo "--- stderr des Starts ---"
+          echo "--- startup stderr ---"
           cat "$RUNNER_TEMP/logs/startup.log"
           if [ "$status" -ne 0 ]; then
-            echo "::error::nvim ist mit Exitcode $status beendet worden"
+            echo "::error::nvim exited with exit code $status"
             exit 1
           fi
-          # E123-Meldungen, Lua-Tracebacks und "Error executing…" abfangen.
+          # Catch E123 messages, Lua tracebacks and "Error executing…".
           if grep -qiE "^E[0-9]+:|stack traceback|Error executing|error detected" \
               "$RUNNER_TEMP/logs/startup.log"; then
-            echo "::error::Fehlerausgabe beim Start von Neovim"
+            echo "::error::error output while starting Neovim"
             exit 1
           fi
 
-      - name: Startzeit messen
+      - name: Measure startup time
         run: |
           set -euo pipefail
           nvim --headless --startuptime "$RUNNER_TEMP/logs/startuptime.log" "+qa!"
-          # Die Gesamtzeit steht in der Zeile "--- NVIM STARTED ---"; danach
-          # folgt noch eine Leerzeile, "tail -1" greift also daneben.
+          # The total time is on the "--- NVIM STARTED ---" line; a blank line
+          # follows it, so "tail -1" would miss.
           total=$(awk '/NVIM STARTED/ { t = $1 } END { print t }' \
             "$RUNNER_TEMP/logs/startuptime.log")
-          echo "Startzeit: ${total} ms"
-          echo "Startzeit (${{ matrix.os }}): **${total} ms**" >> "$GITHUB_STEP_SUMMARY"
+          echo "Startup time: ${total} ms"
+          echo "Startup time (${{ matrix.os }}): **${total} ms**" >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Setup- und Health-Check
+      - name: Setup and health check
         env:
-          # Absolute Pfade nötig: user.main wechselt beim Start nach ~.
+          # Absolute paths required: user.main changes to ~ on start.
           CI_SCRIPT: ${{ github.workspace }}/xdg/config/nvim/.github/ci/health.lua
           CI_REPORT: ${{ github.workspace }}/health-report/${{ matrix.os }}.txt
         run: nvim --headless -c "lua dofile(vim.env.CI_SCRIPT)"
 
-      # Der normale Lauf installiert exakt die Commits aus dem Lockfile und
-      # merkt deshalb nichts von kaputten Upstream-Updates. Im geplanten Lauf
-      # wird darum einmal zusätzlich auf die neuesten Commits aktualisiert.
-      # continue-on-error: ein defektes Plugin-Update ist ein Hinweis, kein
-      # Grund, den Lauf der eigenen Config rot zu machen.
-      - name: Plugin-Updates testen (nur geplanter Lauf)
+      # The normal run installs exactly the commits from the lockfile and
+      # therefore never notices broken upstream updates. The scheduled run
+      # additionally updates to the latest commits once.
+      # continue-on-error: a broken plugin update is a hint, not a reason to
+      # turn the run of your own config red.
+      - name: Test plugin updates (scheduled run only)
         if: >-
           runner.os == 'Linux' &&
           (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
@@ -176,14 +187,14 @@ jobs:
         run: |
           set -euo pipefail
           nvim --headless -c "lua vim.pack.update(nil, { force = true })" -c "qa!"
-          echo "### Lockfile nach vim.pack.update()" >> "$GITHUB_STEP_SUMMARY"
+          echo "### Lockfile after vim.pack.update()" >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
           git -C "$XDG_CONFIG_HOME/nvim" --no-pager diff -- nvim-pack-lock.json \
             >> "$GITHUB_STEP_SUMMARY" || true
           echo '```' >> "$GITHUB_STEP_SUMMARY"
           nvim --headless -c "lua dofile(vim.env.CI_SCRIPT)"
 
-      - name: Health-Report als Artefakt
+      - name: Health report as artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
