@@ -1,14 +1,23 @@
+-- ============================================================================
+--  telescope.lua — Fuzzy-Finder
+--
+--  Externe Werkzeuge (beide vorhanden, per winget installiert):
+--    ripgrep (rg) -> live_grep
+--    fd           -> find_files (respektiert .gitignore, überspringt .git/)
+--  Fehlen sie, fällt Telescope auf langsamere Vim-interne Suche zurück.
+-- ============================================================================
+
 require("telescope").setup({})
 
-local map = vim.keymap.set
-local opts = { noremap = true, silent = true }
 local builtin = require("telescope.builtin")
+local map = vim.keymap.set
 
--- find files
-map("n", "<leader>ff", builtin.find_files, opts)
--- search text (needs ripgrep!)
-map("n", "<leader>fg", builtin.live_grep, opts)
--- open buffers
-map("n", "<leader>fb", builtin.buffers, opts)
--- search help
-map("n", "<leader>fh", builtin.help_tags, opts)
+-- desc erscheint in :map und in Which-Key-artigen Hilfen
+local function opts(desc)
+    return { noremap = true, silent = true, desc = desc }
+end
+
+map("n", "<leader>ff", builtin.find_files, opts("Telescope: Dateien suchen"))
+map("n", "<leader>fg", builtin.live_grep,  opts("Telescope: Text suchen (ripgrep)"))
+map("n", "<leader>fb", builtin.buffers,    opts("Telescope: offene Buffer"))
+map("n", "<leader>fh", builtin.help_tags,  opts("Telescope: Hilfe durchsuchen"))
