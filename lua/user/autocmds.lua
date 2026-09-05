@@ -1,8 +1,16 @@
--- .md -> uppercase .MD extension → markdown filetype
+-- ============================================================================
+--  autocmds.lua — Filetype-Erkennung und filetype-abhängige Einstellungen
+-- ============================================================================
+
+-- Grossgeschriebene Endung ".MD" ebenfalls als Markdown erkennen.
+-- (Neovim vergleicht die Endung case-sensitiv, auch auf Windows.)
 vim.filetype.add({ extension = { MD = "markdown" } })
 
--- space indentation for web/frontend filetypes
+-- In Web-/Frontend-Dateien ist 2er-Einrückung Konvention (Prettier & Co.).
+-- opt_local wirkt nur im jeweiligen Puffer, die globalen 4 aus options.lua
+-- bleiben für alle anderen Filetypes bestehen.
 vim.api.nvim_create_autocmd("FileType", {
+    group = vim.api.nvim_create_augroup("user_indent", { clear = true }),
     pattern = {
         "typescript", "typescriptreact",
         "javascript", "javascriptreact",
