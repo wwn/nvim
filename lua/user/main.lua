@@ -1,34 +1,34 @@
 -- ============================================================================
---  main.lua — lädt alle Teilmodule in fester Reihenfolge
+--  main.lua — loads all submodules in a fixed order
 --
---  Die Reihenfolge ist bewusst gewählt:
---    keymaps/options/autocmds  -> reines Neovim, keine Plugin-Abhängigkeit
---    treesitter ... alpha      -> jeweils ein Plugin, setup() direkt beim Laden
---  Modulname = <Verzeichnis>.<Dateiname> relativ zu lua/
+--  The order is chosen deliberately:
+--    keymaps/options/autocmds  -> pure Neovim, no plugin dependency
+--    treesitter ... alpha      -> one plugin each, setup() right when loaded
+--  Module name = <directory>.<filename> relative to lua/
 -- ============================================================================
 
-require("user.keymaps")     -- Leader-Mappings (Leader selbst kommt aus init.lua)
-require("user.options")     -- vim.opt / vim.o Grundeinstellungen
-require("user.autocmds")    -- Filetype-Erkennung und -abhängige Einstellungen
-require("user.treesitter")  -- Syntax-Highlighting via Treesitter
+require("user.keymaps")     -- Leader mappings (the leader itself comes from init.lua)
+require("user.options")     -- vim.opt / vim.o base settings
+require("user.autocmds")    -- Filetype detection and dependent settings
+require("user.treesitter")  -- Syntax highlighting via Treesitter
 require("user.markdown")    -- render-markdown.nvim
-require("user.lualine")     -- Statuszeile
-require("user.neotree")     -- Dateibaum
-require("user.telescope")   -- Fuzzy-Finder + <leader>f… Mappings
-require("user.alpha")       -- Startbildschirm
+require("user.lualine")     -- Status line
+require("user.neotree")     -- File tree
+require("user.telescope")   -- Fuzzy finder + <leader>f… mappings
+require("user.alpha")       -- Start screen
 
---[[ noch nicht vorhanden / geplant:
+--[[ not yet present / planned:
 require("user.diagnostics")
 --]]
 
--- Nur ins Home wechseln, wenn nvim ohne Datei-Argument gestartet wurde.
--- (Sonst würden Telescope und Neo-tree im Home statt im Projekt suchen.)
--- argc() == 0 heisst: reines `nvim`; `nvim datei` oder `nvim .` bleibt im
--- aktuellen Verzeichnis.
+-- Only switch to home if nvim was started without a file argument.
+-- (Otherwise Telescope and Neo-tree would search in home instead of the project.)
+-- argc() == 0 means: plain `nvim`; `nvim file` or `nvim .` stays in the
+-- current directory.
 if vim.fn.argc() == 0 then
     vim.cmd("cd ~")
 end
 
--- Colorscheme zuletzt: setzt Highlight-Gruppen, die manche Plugins beim
--- setup() bereits registriert haben, korrekt neu.
+-- Colorscheme last: correctly re-applies highlight groups that some plugins
+-- have already registered during their setup().
 vim.cmd.colorscheme("jb")

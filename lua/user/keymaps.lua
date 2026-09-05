@@ -1,39 +1,39 @@
 -- ============================================================================
---  keymaps.lua — globale Tastenbelegungen
+--  keymaps.lua — global key mappings
 --
---  Hinweis: vim.g.mapleader wird in init.lua gesetzt (muss vor dem Laden der
---  Plugins passieren) und darf hier NICHT erneut gesetzt werden.
---  Plugin-eigene Mappings stehen beim jeweiligen Plugin (z. B. telescope.lua).
+--  Note: vim.g.mapleader is set in init.lua (must happen before loading
+--  plugins) and must NOT be set again here.
+--  Plugin-specific mappings live with their respective plugin (e.g. telescope.lua).
 -- ============================================================================
 
 local map = vim.keymap.set
 
--- noremap: nicht rekursiv auflösen; silent: Befehl nicht in der Cmdline zeigen
+-- noremap: don't resolve recursively; silent: don't show the command in the cmdline
 local opts = { noremap = true, silent = true }
 
--- "jj" im Insert-Mode als Escape-Ersatz (Finger bleiben auf der Grundreihe)
-map("i", "jj", "<Esc>", vim.tbl_extend("force", opts, { desc = "Insert-Mode verlassen" }))
+-- "jj" in Insert mode as an Escape substitute (fingers stay on the home row)
+map("i", "jj", "<Esc>", vim.tbl_extend("force", opts, { desc = "Leave insert mode" }))
 
--- Dateibaum ein-/ausblenden
+-- Toggle file tree
 map("n", "<leader>e", "<cmd>Neotree toggle<cr>",
-    vim.tbl_extend("force", opts, { desc = "Neo-tree umschalten" }))
+    vim.tbl_extend("force", opts, { desc = "Toggle Neo-tree" }))
 
 --[[ ---------------------------------------------------------------------------
-  Bewusst deaktivierte Mappings — bei Bedarf einzeln wieder einkommentieren.
-  (Gesammelt hier, damit die aktiven Mappings oben übersichtlich bleiben.)
+  Deliberately disabled mappings — uncomment individually as needed.
+  (Collected here so the active mappings above stay easy to read.)
 
-  Speichern / Beenden
+  Save / quit
 map("n", "<leader>w", "<cmd>w<cr>", opts)
 map("n", "<leader>q", "<cmd>q<cr>", opts)
 map("n", "<leader>Q", "<cmd>qa<cr>", opts)
 
-  Achtung: überschreibt die eingebauten J (Zeilen verbinden) und K (Hilfe/hover)
+  Warning: overwrites the built-in J (join lines) and K (help/hover)
 map("n", "J", "5j", opts)
 map("n", "K", "5k", opts)
 map("v", "J", "5j", opts)
 map("v", "K", "5k", opts)
 
-  Fensterwechsel ohne <C-w>
+  Switch windows without <C-w>
 map("n", "<C-h>", "<C-w>h", opts)
 map("n", "<C-j>", "<C-w>j", opts)
 map("n", "<C-k>", "<C-w>k", opts)
@@ -43,17 +43,17 @@ map("n", "<C-l>", "<C-w>l", opts)
 map("n", "<leader>sv", "<cmd>vsplit<cr>", opts)
 map("n", "<leader>sh", "<cmd>split<cr>", opts)
 
-  Fenstergrösse
+  Window size
 map("n", "<leader>=", "<C-w>+", opts)
 map("n", "<leader>-", "<C-w>-", opts)
 map("n", "<leader>>", "<C-w>>", opts)
 map("n", "<leader><", "<C-w><", opts)
 
-  Buffer-Navigation
+  Buffer navigation
 map("n", "<Tab>", "<cmd>bnext<cr>", opts)
 map("n", "<S-Tab>", "<cmd>bprevious<cr>", opts)
 map("n", "<leader>bd", "<cmd>bdelete<cr>", opts)
 
-  Suchhervorhebung löschen
+  Clear search highlighting
 map("n", "<leader>nh", "<cmd>nohlsearch<cr>", opts)
 --]]

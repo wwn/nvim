@@ -1,11 +1,11 @@
 -- ============================================================================
---  neotree.lua — Dateibaum in der Seitenleiste
---  Umschalten: <leader>e  (Mapping in lua/user/keymaps.lua)
+--  neotree.lua — file tree in the sidebar
+--  Toggle: <leader>e  (mapping in lua/user/keymaps.lua)
 -- ============================================================================
 
 require("neo-tree").setup({
-    -- Sortierung ohne Beachtung der Gross-/Kleinschreibung, sonst stünden auf
-    -- Linux/macOS alle Grossbuchstaben-Einträge zuerst.
+    -- Sort case-insensitively, otherwise on Linux/macOS all uppercase
+    -- entries would come first.
     sort_case_insensitive = true,
 
     window = {
@@ -13,12 +13,12 @@ require("neo-tree").setup({
     },
 
     filesystem = {
-        -- Baum folgt automatisch dem gerade aktiven Puffer und klappt den
-        -- passenden Ordner auf.
+        -- Tree automatically follows the currently active buffer and expands
+        -- the matching folder.
         follow_current_file = {
             enabled = true,
         },
-        -- netrw ersetzen, damit `nvim .` bzw. `:e <ordner>` neo-tree öffnet.
+        -- Replace netrw so that `nvim .` or `:e <folder>` opens neo-tree.
         hijack_netrw_behavior = "open_default",
     },
 })

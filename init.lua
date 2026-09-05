@@ -1,78 +1,78 @@
 -- ============================================================================
---  init.lua — Einstiegspunkt der Konfiguration (Neovim >= 0.12)
+--  init.lua — entry point of the configuration (Neovim >= 0.12)
 --
---  Reihenfolge ist wichtig:
---    1. Leader-Tasten setzen  (VOR dem Laden von Plugins!)
---    2. Plugins registrieren  (vim.pack.add lädt sofort/synchron)
---    3. Eigene Module laden   (lua/user/*)
---    4. GUI-Spezifisches      (nur unter Neovide)
+--  Order matters:
+--    1. Set leader keys      (BEFORE loading plugins!)
+--    2. Register plugins     (vim.pack.add loads immediately/synchronously)
+--    3. Load own modules     (lua/user/*)
+--    4. GUI-specific stuff   (only under Neovide)
 -- ============================================================================
 
--- Schnellerer Lua-Modul-Loader (Bytecode-Cache) — sollte ganz oben stehen.
+-- Faster Lua module loader (bytecode cache) — should be at the very top.
 vim.loader.enable()
 
 -- ---------------------------------------------------------------------------
--- 1. Leader-Tasten
+-- 1. Leader keys
 -- ---------------------------------------------------------------------------
--- Muss VOR vim.pack.add() stehen: Mappings, die ein Plugin beim Laden anlegt,
--- lösen "<leader>" sofort auf. Wird der Leader erst danach gesetzt, hängen
--- solche Mappings noch am alten Default ("\").
+-- Must come BEFORE vim.pack.add(): mappings a plugin creates while loading
+-- resolve "<leader>" immediately. If the leader is set afterwards, such
+-- mappings still stick to the old default ("\").
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
 -- ---------------------------------------------------------------------------
 -- 2. Plugins
 -- ---------------------------------------------------------------------------
--- vim.pack ist der in Neovim 0.12 eingebaute Plugin-Manager. Die installierten
--- Commits stehen in nvim-pack-lock.json (im Repo eingecheckt = reproduzierbar).
---   :lua vim.pack.update()   -> aktualisiert und schreibt den Lockfile neu
---   :lua vim.pack.get()      -> zeigt Status aller Plugins
--- Optional lässt sich pro Eintrag pinnen: { src = '...', version = 'v1.2.3' }
+-- vim.pack is the plugin manager built into Neovim 0.12. The installed
+-- commits are recorded in nvim-pack-lock.json (checked into the repo = reproducible).
+--   :lua vim.pack.update()   -> updates and rewrites the lockfile
+--   :lua vim.pack.get()      -> shows the status of all plugins
+-- Optionally pin per entry: { src = '...', version = 'v1.2.3' }
 vim.pack.add {
-    -- Colorscheme (JetBrains-Look), wird in lua/user/main.lua aktiviert
+    -- Colorscheme (JetBrains look), activated in lua/user/main.lua
     'https://github.com/nickkadutskyi/jb.nvim',
-    -- Statuszeile
+    -- Status line
     'https://github.com/nvim-lualine/lualine.nvim',
 
-    -- Icons (Voraussetzung für neo-tree, lualine, telescope, render-markdown)
-    -- Braucht eine installierte Nerd Font im Terminal / in Neovide.
+    -- Icons (required by neo-tree, lualine, telescope, render-markdown)
+    -- Needs a Nerd Font installed in the terminal / in Neovide.
     'https://github.com/nvim-tree/nvim-web-devicons',
 
-    -- Dateibaum (neo-tree) + dessen zwingende Abhängigkeiten
+    -- File tree (neo-tree) + its required dependencies
     'https://github.com/nvim-neo-tree/neo-tree.nvim',
-    'https://github.com/nvim-lua/plenary.nvim',  -- Lua-Utilities (auch von telescope genutzt)
-    'https://github.com/MunifTanjim/nui.nvim',   -- UI-Komponenten für neo-tree
+    'https://github.com/nvim-lua/plenary.nvim',  -- Lua utilities (also used by telescope)
+    'https://github.com/MunifTanjim/nui.nvim',   -- UI components for neo-tree
 
-    -- Fuzzy-Finder (nutzt extern: ripgrep für live_grep, fd für find_files)
+    -- Fuzzy finder (uses externally: ripgrep for live_grep, fd for find_files)
     'https://github.com/nvim-telescope/telescope.nvim',
 
-    -- Markdown-Vorschau direkt im Puffer (Tabellen, fett, Links, Checkboxen)
+    -- Markdown preview directly in the buffer (tables, bold, links, checkboxes)
     'https://github.com/MeanderingProgrammer/render-markdown.nvim',
 
-    -- Startbildschirm / Dashboard
+    -- Start screen / dashboard
     'https://github.com/goolord/alpha-nvim',
 }
 
 -- ---------------------------------------------------------------------------
--- 3. Eigene Module
+-- 3. Own modules
 -- ---------------------------------------------------------------------------
--- "user.main" == lua/user/main.lua. (require("user") würde stattdessen nach
--- lua/user/init.lua suchen.)
+-- "user.main" == lua/user/main.lua. (require("user") would instead look for
+-- lua/user/init.lua.)
 require("user.main")
 
 -- ---------------------------------------------------------------------------
--- 4. Neovide (GUI) — wird im Terminal-Neovim komplett übersprungen
+-- 4. Neovide (GUI) — skipped entirely in terminal Neovim
 -- ---------------------------------------------------------------------------
 if vim.g.neovide then
-    -- Ligaturen: "vim.g.neovide_font_features" gibt es NICHT. Font-Features
-    -- werden bei Neovide ausschliesslich in der eigenen Config-Datei gesetzt:
+    -- Ligatures: "vim.g.neovide_font_features" does NOT exist. Font features
+    -- for Neovide are only set in its own config file:
     --   %APPDATA%\neovide\config.toml
     --   [font.features]
     --   "JetBrainsMonoNL Nerd Font Mono" = ["-calt", "-liga", "-dlig", "-clig"]
-    -- Hier unnötig, weil die "NL"-Variante von JetBrains Mono ohnehin
-    -- ligaturfrei ist ("NL" = No Ligatures).
+    -- Unnecessary here, since the "NL" variant of JetBrains Mono is already
+    -- ligature-free ("NL" = No Ligatures).
 
-    -- Schriftgrösse je Plattform (macOS rendert Punktgrössen kleiner)
+    -- Font size per platform (macOS renders point sizes smaller)
     local os_name = vim.uv.os_uname().sysname
     if os_name == "Darwin" then
         vim.o.guifont = "JetBrainsMonoNL Nerd Font Mono:h16"
@@ -80,9 +80,9 @@ if vim.g.neovide then
         vim.o.guifont = "JetBrainsMonoNL Nerd Font Mono:h12"
     end
 
-    -- Partikeleffekt hinter dem Cursor (:h neovide_cursor_vfx_mode)
+    -- Particle effect behind the cursor (:h neovide_cursor_vfx_mode)
     vim.g.neovide_cursor_vfx_mode = "railgun"
 
-    -- Fenstertransparenz (0.0 = unsichtbar, 1.0 = deckend)
+    -- Window transparency (0.0 = invisible, 1.0 = opaque)
     vim.g.neovide_opacity = 0.85
 end

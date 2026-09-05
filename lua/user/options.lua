@@ -1,103 +1,103 @@
 -- ============================================================================
---  options.lua — Grundeinstellungen des Editors
---  Nachschlagen: :h 'optionsname'  (z. B. :h 'scrolloff')
+--  options.lua — editor base settings
+--  Look up: :h 'optionsname'  (e.g. :h 'scrolloff')
 -- ============================================================================
 
 local opt = vim.opt
 
 -- ---------------------------------------------------------------------------
--- Provider abschalten
+-- Disable providers
 -- ---------------------------------------------------------------------------
--- Es sind keine externen Sprach-Provider installiert. Ohne diese Zeilen meldet
--- :checkhealth vier Warnungen und Neovim sucht beim Start unnötig nach node,
--- perl, python3 und ruby.
+-- No external language providers are installed. Without these lines
+-- :checkhealth reports four warnings and Neovim needlessly searches for node,
+-- perl, python3 and ruby on startup.
 vim.g.loaded_node_provider = 0
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_python3_provider = 0
 vim.g.loaded_ruby_provider = 0
 
 -- ---------------------------------------------------------------------------
--- Darstellung
+-- Appearance
 -- ---------------------------------------------------------------------------
--- Helle Variante des Colorschemes (jb.nvim wertet 'background' aus).
+-- Light variant of the colorscheme (jb.nvim reads 'background').
 vim.o.background = "light"
 
--- Echte 24-Bit-Farben (in 0.12 meist schon Default, hier explizit für Neovide
--- und ältere Terminals).
+-- True 24-bit colors (usually already the default in 0.12, explicit here for
+-- Neovide and older terminals).
 opt.termguicolors = true
 
--- Maus in allen Modi
+-- Mouse in all modes
 opt.mouse = "a"
 
--- Systemzwischenablage mit y/p teilen (unter Windows: win32yank/Windows-Clipboard)
+-- Share the system clipboard with y/p (on Windows: win32yank/Windows clipboard)
 opt.clipboard = "unnamedplus"
 
--- Zeilennummern: absolute Nummer der Cursorzeile + relative Nummern darum
--- (relativ = praktisch für Bewegungen wie 5j / 12k)
+-- Line numbers: absolute number of the cursor line + relative numbers around it
+-- (relative = handy for movements like 5j / 12k)
 opt.number = true
 opt.relativenumber = true
 
--- Aktuelle Zeile hervorheben
+-- Highlight the current line
 opt.cursorline = true
 
--- Beim Scrollen immer 8 Zeilen Kontext über/unter dem Cursor behalten
+-- Always keep 8 lines of context above/below the cursor while scrolling
 opt.scrolloff = 8
 
--- Spalte für Zeichen (Diagnostics, Git) immer reservieren, damit der Text
--- nicht seitlich springt, sobald ein Zeichen erscheint.
+-- Always reserve a column for signs (diagnostics, git) so text doesn't
+-- shift sideways as soon as a sign appears.
 opt.signcolumn = "yes"
 
 -- ---------------------------------------------------------------------------
--- Suchen
+-- Search
 -- ---------------------------------------------------------------------------
--- Gross-/Kleinschreibung ignorieren …
+-- Ignore case …
 opt.ignorecase = true
--- … ausser die Suchanfrage enthält selbst Grossbuchstaben (braucht ignorecase)
+-- … unless the search query itself contains uppercase letters (needs ignorecase)
 opt.smartcase = true
 
 -- ---------------------------------------------------------------------------
--- Zeilenumbruch
+-- Line wrapping
 -- ---------------------------------------------------------------------------
--- Lange Zeilen optisch umbrechen (Default: an)
+-- Visually wrap long lines (default: on)
 opt.wrap = true
--- Nur an Wortgrenzen umbrechen, nicht mitten im Wort
+-- Only wrap at word boundaries, not in the middle of a word
 opt.linebreak = true
--- Umbrochene Zeilen auf Einrückungshöhe fortsetzen
+-- Continue wrapped lines at the indentation level
 opt.breakindent = true
 
 -- ---------------------------------------------------------------------------
--- Einrückung (Default 4 Spaces; Web-Filetypes auf 2 → siehe autocmds.lua)
+-- Indentation (default 4 spaces; web filetypes to 2 → see autocmds.lua)
 -- ---------------------------------------------------------------------------
-opt.tabstop = 4      -- Breite eines echten Tabulatorzeichens
-opt.shiftwidth = 4   -- Breite eines Einrückungsschritts (>>, <<, autoindent)
-opt.softtabstop = 4  -- Breite, die <Tab>/<BS> im Insert-Mode bewegen
-opt.expandtab = true -- <Tab> erzeugt Leerzeichen statt Tabulatoren
-opt.autoindent = true -- Einrückung der Vorzeile übernehmen
--- opt.smartindent = true -- absichtlich aus: kollidiert mit Treesitter-Indent
-                          -- und schiebt z. B. '#' in Python an den Zeilenanfang
+opt.tabstop = 4      -- Width of an actual tab character
+opt.shiftwidth = 4   -- Width of one indentation step (>>, <<, autoindent)
+opt.softtabstop = 4  -- Width that <Tab>/<BS> move in Insert mode
+opt.expandtab = true -- <Tab> produces spaces instead of tab characters
+opt.autoindent = true -- Carry over the previous line's indentation
+-- opt.smartindent = true -- deliberately off: conflicts with Treesitter indent
+                          -- and e.g. pushes '#' in Python to the start of the line
 
 -- ---------------------------------------------------------------------------
--- Vervollständigung (eingebaut, ohne cmp/blink)
+-- Completion (built-in, without cmp/blink)
 -- ---------------------------------------------------------------------------
--- 'autocomplete' (neu in 0.12): Popup erscheint automatisch beim Tippen.
+-- 'autocomplete' (new in 0.12): popup appears automatically while typing.
 opt.autocomplete = true
--- "noselect": nichts ist vorausgewählt, <CR> fügt also keinen Vorschlag ein,
--- sondern eine neue Zeile. Ohne das ist Autocomplete beim Schreiben lästig.
--- "menu,popup" sind die Neovim-Defaults (Menü + Doku-Fenster daneben).
+-- "noselect": nothing is preselected, so <CR> doesn't insert a suggestion
+-- but a new line. Without this, autocomplete gets annoying while writing.
+-- "menu,popup" are the Neovim defaults (menu + doc window beside it).
 opt.completeopt = { "menu", "popup", "noselect" }
 
 -- ---------------------------------------------------------------------------
--- Dateien / Verhalten
+-- Files / behavior
 -- ---------------------------------------------------------------------------
--- Undo-Historie über Sitzungen hinweg (~/AppData/Local/nvim-data/undo)
+-- Undo history across sessions (~/AppData/Local/nvim-data/undo)
 opt.undofile = true
 
--- Splits nach rechts bzw. unten öffnen (statt links/oben)
+-- Open splits to the right / below (instead of left/above)
 opt.splitright = true
 opt.splitbelow = true
 
--- Kürzeres CursorHold-Intervall (Swapfile-Schreiben, Plugin-Timer). Default 4000.
+-- Shorter CursorHold interval (swapfile writes, plugin timers). Default 4000.
 opt.updatetime = 250
 
--- Bei :q mit ungespeicherten Änderungen nachfragen statt abzubrechen
+-- Ask for confirmation on :q with unsaved changes instead of aborting
 opt.confirm = true

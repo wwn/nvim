@@ -1,16 +1,16 @@
 -- ============================================================================
---  lualine.lua — Statuszeile
+--  lualine.lua — status line
 -- ============================================================================
 
--- lualine zeigt den Modus (NORMAL/INSERT/…) bereits selbst an; die eingebaute
--- Anzeige in der Kommandozeile wäre doppelt gemoppelt.
+-- lualine already shows the mode (NORMAL/INSERT/…) itself; the built-in
+-- display in the command line would be redundant.
 vim.o.showmode = false
 
 require("lualine").setup({
     options = {
-        -- "auto" leitet die Farben aus dem aktiven Colorscheme (jb) ab.
+        -- "auto" derives the colors from the active colorscheme (jb).
         theme = "auto",
-        -- Trennzeichen brauchen eine Nerd Font; nvim-web-devicons ist geladen.
+        -- Separators need a Nerd Font; nvim-web-devicons is loaded.
         icons_enabled = true,
     },
 })
