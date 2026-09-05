@@ -16,21 +16,22 @@
 name: nvim-health
 
 on:
-  # Push runs for the day-to-day working branches. "**" (not "*") so that
-  # multi-level names like feature/main/xyz match too.
+  # Runs on every push to a working branch, plus to develop and main.
+  #
+  # develop and main only ever receive changes through a merged pull request
+  # (branch protection), and a PR merge emits a push event on the target
+  # branch — so "push: develop/main" is exactly "a PR was merged into it".
+  # Unlike a pull_request run, this executes in the branch's own context
+  # (github.ref = refs/heads/main), so the check shows up on the branch.
+  #
+  # "**" (not "*") so multi-level names like feature/main/xyz match too.
   push:
     branches:
+      - main
+      - develop
       - "feature/**"
       - "bugfix/**"
       - "chore/**"
-  # develop and main are built only when a branch is merged into them via a
-  # pull request. GitHub signals a merge as a "closed" pull_request event, so
-  # we listen on "closed" and drop the non-merge case in the job-level "if".
-  pull_request:
-    types: [closed]
-    branches:
-      - develop
-      - main
   # Early Monday: catches upstream plugin updates that break the config
   # before you walk into a broken nvim yourself.
   schedule:
@@ -51,11 +52,6 @@ env:
 jobs:
   health:
     name: ${{ matrix.os }}
-    # Run for push/schedule/manual events, and for pull requests only when
-    # they were actually merged (not just closed).
-    if: >-
-      github.event_name != 'pull_request' ||
-      github.event.pull_request.merged == true
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -83,9 +79,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: xdg/config/nvim
-          # For a merged pull request, build the resulting state of the base
-          # branch (develop/main) rather than the PR merge ref.
-          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.ref || github.ref }}
 
       - name: Install Neovim (Linux)
         if: runner.os == 'Linux'
