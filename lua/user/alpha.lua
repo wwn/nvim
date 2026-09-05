@@ -1,22 +1,22 @@
 -- ============================================================================
---  alpha.lua — Startbildschirm mit Vim-Spickzettel
+--  alpha.lua — start screen with a Vim cheat sheet
 --
---  Aufbau: drei gleich breite Spalten, die zeilenweise nebeneinandergelegt
---  werden. Damit die Spalten sauber untereinander stehen, wird durchgehend mit
---  der *Anzeigebreite* gerechnet (vim.fn.strdisplaywidth), nicht mit der
---  Byte-Länge (#s). Zeichen wie "→" oder "─" belegen mehrere Bytes, aber nur
---  eine Bildschirmspalte — mit # verrutschen sonst alle folgenden Spalten.
+--  Layout: three equal-width columns laid out row by row side by side.
+--  For the columns to line up cleanly, everything is computed using
+--  *display width* (vim.fn.strdisplaywidth), not byte length (#s).
+--  Characters like "→" or "─" take up multiple bytes but only
+--  one screen column — with # all following columns would shift out of place.
 -- ============================================================================
 
 local alpha = require("alpha")
 
 -- ---------------------------------------------------------------------------
--- Kopfzeile: Versionsinfos
+-- Header line: version info
 -- ---------------------------------------------------------------------------
 local v = vim.version()
 local info_lines = { string.format("  NVIM v%d.%d.%d", v.major, v.minor, v.patch) }
 if vim.g.neovide then
-    -- Neovide setzt g:neovide_version selbst; bei älteren Versionen fehlt es.
+    -- Neovide sets g:neovide_version itself; older versions lack it.
     local nv = vim.g.neovide_version
     table.insert(info_lines, nv and string.format("  Neovide v%s", nv) or "  Neovide")
 end
@@ -28,36 +28,36 @@ local header = {
 }
 
 -- ---------------------------------------------------------------------------
--- Spalten-Geometrie
+-- Column geometry
 -- ---------------------------------------------------------------------------
-local KW, DW = 12, 15      -- Breite Tastenkürzel / Breite Beschreibung
-                           -- KW=12: auch das längste Kürzel ("gu{m}/gU{m}")
-                           -- behält noch ein Trennleerzeichen
-local COL_W = KW + DW      -- 27 Bildschirmspalten pro Spalte
-local GAP = "  "           -- Abstand zwischen den Spalten
+local KW, DW = 12, 15      -- keybind width / description width
+                           -- KW=12: even the longest keybind ("gu{m}/gU{m}")
+                           -- still keeps one separating space
+local COL_W = KW + DW      -- 27 screen columns per column
+local GAP = "  "           -- gap between the columns
 
--- Anzeigebreite statt Byte-Länge (siehe Kommentar oben)
+-- Display width instead of byte length (see comment above)
 local width = vim.fn.strdisplaywidth
 
--- Auf feste Breite auffüllen; zu lange Texte werden nicht abgeschnitten,
--- dann ist die Zeile eben etwas breiter.
+-- Pad to a fixed width; texts that are too long are not truncated,
+-- the line just ends up a bit wider then.
 local function pad(s, w)
     return s .. string.rep(" ", math.max(0, w - width(s)))
 end
 
--- Eine Spickzettel-Zeile: "<Kürzel>   <Beschreibung>"
+-- One cheat-sheet line: "<keybind>   <description>"
 local function entry(k, d)
     return pad(k or "", KW) .. pad(d or "", DW)
 end
 
--- Abschnittsüberschrift: "── TITEL ──────────────" auf exakt COL_W Breite
+-- Section heading: "── TITLE ──────────────" at exactly COL_W width
 local function hdr(title)
-    -- 4 = Anzeigebreite von "── " (3) plus das Leerzeichen nach dem Titel
+    -- 4 = display width of "── " (3) plus the space after the title
     return "── " .. title .. " " .. string.rep("─", math.max(0, COL_W - width(title) - 4))
 end
 
 -- ---------------------------------------------------------------------------
--- Inhalt der Spalten
+-- Column contents
 -- ---------------------------------------------------------------------------
 local col1 = {
     hdr("FILES"),
@@ -137,10 +137,10 @@ local col3 = {
 }
 
 -- ---------------------------------------------------------------------------
--- Spalten nebeneinanderlegen
+-- Lay the columns out side by side
 -- ---------------------------------------------------------------------------
--- In schmalen Fenstern nur so viele Spalten zeigen, wie hineinpassen —
--- sonst würde alpha die zu langen Zeilen umbrechen und das Raster zerfiele.
+-- In narrow windows, only show as many columns as fit —
+-- otherwise alpha would wrap the overly long lines and the grid would fall apart.
 local all_cols = { col1, col2, col3 }
 local usable = math.max(1, math.floor(vim.o.columns / (COL_W + #GAP)))
 local cols = {}
@@ -157,7 +157,7 @@ local lines = {}
 for row = 1, max_rows do
     local parts = {}
     for i, c in ipairs(cols) do
-        -- Letzte Spalte nicht auffüllen: spart Leerzeichen am Zeilenende.
+        -- Don't pad the last column: saves trailing spaces at the end of the line.
         local cell = c[row] or ""
         parts[#parts + 1] = GAP .. (i < #cols and pad(cell, COL_W) or cell)
     end
