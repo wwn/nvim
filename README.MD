@@ -96,3 +96,26 @@ show all files except hidden ones in current directory:
 find . -type d -path '*/.*' -prune -o -type f -exec printf "\033[1;32m\n[PATH: %s]\033[0m\n" {} \; -exec cat {} \;
 ```
 
+
+## CI
+
+[![nvim-health](https://github.com/wwn/nvim/actions/workflows/health.yml/badge.svg)](https://github.com/wwn/nvim/actions/workflows/health.yml)
+
+`.github/workflows/health.yml` installs Neovim (stable) plus `ripgrep`/`fd` on
+Linux and Windows, checks this config out into `$XDG_CONFIG_HOME/nvim` and
+
+1. lets `vim.pack.add()` install every plugin pinned in `nvim-pack-lock.json`,
+2. asserts a second start produces no errors on stderr,
+3. runs `.github/ci/health.lua`: lockfile vs. installed plugins, every
+   `lua/user/*.lua` actually loaded, external tools present, `:checkhealth`.
+
+The run fails on ERROR only; WARNINGs land in the job summary and in the
+uploaded health report. The weekly scheduled run additionally does a
+`vim.pack.update()` on Linux to see whether the newest upstream commits still
+pass — that step never fails the build.
+
+Run the same check locally:
+
+```
+nvim --headless -c "lua dofile(vim.fn.stdpath('config') .. '/.github/ci/health.lua')"
+```
