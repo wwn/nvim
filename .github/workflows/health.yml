@@ -63,6 +63,12 @@ jobs:
       XDG_DATA_HOME: ${{ github.workspace }}/xdg/data
       XDG_STATE_HOME: ${{ github.workspace }}/xdg/state
       XDG_CACHE_HOME: ${{ github.workspace }}/xdg/cache
+      # In einem run:-Step ist $TERM nicht gesetzt. Der Terminal-Abschnitt von
+      # :checkhealth ruft dann "infocmp -L" auf, das mit "environment variable
+      # TERM not set" abbricht und als ERROR gemeldet wird — eine Eigenheit des
+      # Runners, nicht der Config. xterm-256color liegt in ncurses-base und ist
+      # auf den Images vorhanden.
+      TERM: xterm-256color
 
     steps:
       - name: Config auschecken
@@ -108,6 +114,9 @@ jobs:
           git --version
           rg --version | sed -n "1p"
           fd --version
+          # Diagnose: läuft das nicht durch, meldet der Terminal-Abschnitt von
+          # :checkhealth später einen ERROR.
+          infocmp -L | sed -n "1p" || echo "infocmp fehlgeschlagen (TERM=$TERM)"
 
       # Erster Start: vim.pack.add() klont hier alle Plugins. Die Ausgabe darf
       # laut sein — geprüft wird erst der zweite Start.
