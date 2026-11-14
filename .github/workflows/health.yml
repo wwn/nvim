@@ -3,7 +3,7 @@
 #  machine and that :checkhealth runs without errors.
 #
 #  Steps per operating system:
-#    1. Install Neovim (stable)
+#    1. Install Neovim (stable) on Linux, macOS and Windows
 #    2. Install external tools (git/ripgrep/fd — Telescope needs them)
 #    3. Check out the config into $XDG_CONFIG_HOME/nvim
 #    4. First start: vim.pack.add() clones every plugin from the lockfile
@@ -56,7 +56,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
     defaults:
       run:
         shell: bash
@@ -76,7 +76,7 @@ jobs:
 
     steps:
       - name: Check out config
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           path: xdg/config/nvim
 
@@ -88,6 +88,16 @@ jobs:
           curl -fsSL "$url" -o "$RUNNER_TEMP/nvim.tar.gz"
           tar -C "$RUNNER_TEMP" -xzf "$RUNNER_TEMP/nvim.tar.gz"
           echo "$RUNNER_TEMP/nvim-linux-x86_64/bin" >> "$GITHUB_PATH"
+
+      - name: Install Neovim (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          set -euo pipefail
+          # macos-latest runs on Apple Silicon.
+          url="https://github.com/neovim/neovim/releases/download/${NVIM_VERSION}/nvim-macos-arm64.tar.gz"
+          curl -fsSL "$url" -o "$RUNNER_TEMP/nvim.tar.gz"
+          tar -C "$RUNNER_TEMP" -xzf "$RUNNER_TEMP/nvim.tar.gz"
+          echo "$RUNNER_TEMP/nvim-macos-arm64/bin" >> "$GITHUB_PATH"
 
       - name: Install Neovim (Windows)
         if: runner.os == 'Windows'
@@ -106,6 +116,10 @@ jobs:
           sudo apt-get install -y -qq ripgrep fd-find
           # Debian names the binary "fdfind"; Telescope looks for "fd" first.
           sudo ln -sf "$(command -v fdfind)" /usr/local/bin/fd
+
+      - name: Install ripgrep and fd (macOS)
+        if: runner.os == 'macOS'
+        run: brew install ripgrep fd
 
       - name: Install ripgrep and fd (Windows)
         if: runner.os == 'Windows'
@@ -189,7 +203,7 @@ jobs:
 
       - name: Health report as artifact
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: health-report-${{ matrix.os }}
           path: |

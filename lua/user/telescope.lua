@@ -1,7 +1,7 @@
 -- ============================================================================
 --  telescope.lua — fuzzy finder
 --
---  External tools (both present, installed via winget):
+--  External tools (winget on Windows, brew on macOS):
 --    ripgrep (rg) -> live_grep
 --    fd           -> find_files (respects .gitignore, skips .git/)
 --  If missing, Telescope falls back to slower Vim-internal search.
@@ -14,7 +14,7 @@ local map = vim.keymap.set
 
 -- desc shows up in :map and in which-key-style help
 local function opts(desc)
-    return { noremap = true, silent = true, desc = desc }
+    return { silent = true, desc = desc }
 end
 
 map("n", "<leader>ff", builtin.find_files, opts("Telescope: find files"))
