@@ -95,7 +95,10 @@ jobs:
         run: |
           set -euo pipefail
           dnf install -y --setopt=install_weak_deps=False \
-            git tar gzip curl which ncurses ripgrep fd-find
+            git tar gzip curl which ncurses ripgrep fd-find glibc-langpack-en
+          # The image has no locale set (C locale); :checkhealth reports an
+          # ERROR "Locale does not support UTF-8" then.
+          echo "LANG=en_US.UTF-8" >> "$GITHUB_ENV"
 
       - name: Check out config
         uses: actions/checkout@v7
