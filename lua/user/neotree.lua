@@ -20,5 +20,12 @@ require("neo-tree").setup({
         },
         -- Replace netrw so that `nvim .` or `:e <folder>` opens neo-tree.
         hijack_netrw_behavior = "open_default",
+        -- Show hidden, system and gitignored files by default ("H" still toggles).
+        filtered_items = {
+            hide_dotfiles = false,   -- .gitignore, .github/, .env …
+            hide_gitignored = false, -- node_modules, build output …
+            hide_hidden = false,     -- Windows "hidden" attribute
+            hide_by_name = {},       -- default hides .DS_Store and thumbs.db
+        },
     },
 })
