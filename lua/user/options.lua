@@ -29,7 +29,7 @@ opt.termguicolors = true
 -- Mouse in all modes
 opt.mouse = "a"
 
--- Share the system clipboard with y/p (on Windows: win32yank/Windows clipboard)
+-- Share the system clipboard with y/p (macOS: pbcopy, Windows: win32yank)
 opt.clipboard = "unnamedplus"
 
 -- Line numbers: absolute number of the cursor line + relative numbers around it
@@ -89,7 +89,7 @@ opt.completeopt = { "menu", "popup", "noselect" }
 -- ---------------------------------------------------------------------------
 -- Files / behavior
 -- ---------------------------------------------------------------------------
--- Undo history across sessions (~/AppData/Local/nvim-data/undo)
+-- Undo history across sessions (stdpath("state") .. "/undo")
 opt.undofile = true
 
 -- Open splits to the right / below (instead of left/above)
