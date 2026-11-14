@@ -102,7 +102,7 @@ find . -type d -path '*/.*' -prune -o -type f -exec printf "\033[1;32m\n[PATH: %
 [![nvim-health](https://github.com/wwn/nvim/actions/workflows/health.yml/badge.svg)](https://github.com/wwn/nvim/actions/workflows/health.yml)
 
 `.github/workflows/health.yml` installs Neovim (stable) plus `ripgrep`/`fd` on
-Linux and Windows, checks this config out into `$XDG_CONFIG_HOME/nvim` and
+Linux, macOS and Windows, checks this config out into `$XDG_CONFIG_HOME/nvim` and
 
 1. lets `vim.pack.add()` install every plugin pinned in `nvim-pack-lock.json`,
 2. asserts a second start produces no errors on stderr,

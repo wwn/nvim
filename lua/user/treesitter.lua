@@ -5,7 +5,7 @@
 --  vim and vimdoc already included, but only starts Treesitter on its own in
 --  the bundled ftplugins for help, lua, markdown and query
 --  (see $VIMRUNTIME/ftplugin/). For c, vim, vimdoc — and for any parser
---  that later ends up manually in ~/AppData/Local/nvim/parser/ — this
+--  that later ends up manually in <config>/parser/ — this
 --  autocmd is needed. A plugin like nvim-treesitter is not required for this.
 -- ============================================================================
 

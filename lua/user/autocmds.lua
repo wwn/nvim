@@ -24,3 +24,11 @@ vim.api.nvim_create_autocmd("FileType", {
         vim.opt_local.softtabstop = 2
     end,
 })
+
+-- Briefly highlight the yanked text, so it is visible what y/yy just copied.
+vim.api.nvim_create_autocmd("TextYankPost", {
+    group = vim.api.nvim_create_augroup("user_yank", { clear = true }),
+    callback = function()
+        vim.hl.on_yank()
+    end,
+})

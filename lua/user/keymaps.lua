@@ -8,8 +8,9 @@
 
 local map = vim.keymap.set
 
--- noremap: don't resolve recursively; silent: don't show the command in the cmdline
-local opts = { noremap = true, silent = true }
+-- silent: don't show the command in the cmdline
+-- (vim.keymap.set is non-recursive by default, noremap is not needed)
+local opts = { silent = true }
 
 -- "jj" in Insert mode as an Escape substitute (fingers stay on the home row)
 map("i", "jj", "<Esc>", vim.tbl_extend("force", opts, { desc = "Leave insert mode" }))
