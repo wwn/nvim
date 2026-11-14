@@ -12,9 +12,11 @@
 name: pr-policy
 
 on:
+  # Deliberately no "branches:" filter: the job runs for every PR and only
+  # enforces the rule when the base is main. Otherwise retargeting a PR from
+  # main to develop would not re-run the check, and the old failure from the
+  # main attempt would stay attached to the PR.
   pull_request:
-    branches:
-      - main
     # "edited" also fires when the base branch of an existing PR is changed.
     types: [opened, reopened, synchronize, edited]
 
@@ -23,15 +25,23 @@ permissions:
 
 jobs:
   allowed-source-branch:
+    # Keep this name: it is what branch protection references as the
+    # required status check.
     name: source branch allowed to target main
     runs-on: ubuntu-latest
     steps:
       - name: Only develop or hotfix/** may target main
         env:
-          # github.head_ref is the PR source branch name (no refs/heads/ prefix).
-          # Passed through env, never interpolated into the script directly.
+          # github.head_ref / github.base_ref are the PR source and target
+          # branch names (no refs/heads/ prefix). Passed through env, never
+          # interpolated into the script directly.
           HEAD_REF: ${{ github.head_ref }}
+          BASE_REF: ${{ github.base_ref }}
         run: |
+          if [ "$BASE_REF" != "main" ]; then
+            echo "OK: target is '$BASE_REF', no restriction"
+            exit 0
+          fi
           case "$HEAD_REF" in
             develop | hotfix/*)
               echo "OK: '$HEAD_REF' is allowed to target main" ;;
