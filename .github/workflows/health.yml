@@ -51,12 +51,24 @@ env:
 
 jobs:
   health:
-    name: ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.runner }}
+    # Fedora has no hosted runner image: the job runs in a fedora container
+    # on an ubuntu runner. Empty for macOS/Windows = no container.
+    container: ${{ matrix.container }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+          - name: fedora
+            runner: ubuntu-latest
+            container: fedora:latest
+          - name: macos
+            runner: macos-latest
+            container: ""
+          - name: windows
+            runner: windows-latest
+            container: ""
     defaults:
       run:
         shell: bash
@@ -75,6 +87,19 @@ jobs:
       TERM: xterm-256color
 
     steps:
+      # Before checkout: the fedora image ships neither git nor tar/curl, and
+      # health.lua compares the lockfile via git. The container runs as root,
+      # so no sudo. Fedora's fd-find installs the binary as "fd" already.
+      - name: Install tools (Fedora)
+        if: matrix.name == 'fedora'
+        run: |
+          set -euo pipefail
+          dnf install -y --setopt=install_weak_deps=False \
+            git tar gzip curl which ncurses ripgrep fd-find glibc-langpack-en
+          # The image has no locale set (C locale); :checkhealth reports an
+          # ERROR "Locale does not support UTF-8" then.
+          echo "LANG=en_US.UTF-8" >> "$GITHUB_ENV"
+
       - name: Check out config
         uses: actions/checkout@v7
         with:
@@ -107,15 +132,6 @@ jobs:
           Invoke-WebRequest -Uri $url -OutFile "$env:RUNNER_TEMP\nvim.zip"
           Expand-Archive -Path "$env:RUNNER_TEMP\nvim.zip" -DestinationPath "$env:RUNNER_TEMP\nvim" -Force
           "$env:RUNNER_TEMP\nvim\nvim-win64\bin" | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
-
-      - name: Install ripgrep and fd (Linux)
-        if: runner.os == 'Linux'
-        run: |
-          set -euo pipefail
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq ripgrep fd-find
-          # Debian names the binary "fdfind"; Telescope looks for "fd" first.
-          sudo ln -sf "$(command -v fdfind)" /usr/local/bin/fd
 
       - name: Install ripgrep and fd (macOS)
         if: runner.os == 'macOS'
@@ -169,13 +185,13 @@ jobs:
           total=$(awk '/NVIM STARTED/ { t = $1 } END { print t }' \
             "$RUNNER_TEMP/logs/startuptime.log")
           echo "Startup time: ${total} ms"
-          echo "Startup time (${{ matrix.os }}): **${total} ms**" >> "$GITHUB_STEP_SUMMARY"
+          echo "Startup time (${{ matrix.name }}): **${total} ms**" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Setup and health check
         env:
           # Absolute paths required: user.main changes to ~ on start.
           CI_SCRIPT: ${{ github.workspace }}/xdg/config/nvim/.github/ci/health.lua
-          CI_REPORT: ${{ github.workspace }}/health-report/${{ matrix.os }}.txt
+          CI_REPORT: ${{ github.workspace }}/health-report/${{ matrix.name }}.txt
         run: nvim --headless -c "lua dofile(vim.env.CI_SCRIPT)"
 
       # The normal run installs exactly the commits from the lockfile and
@@ -190,7 +206,7 @@ jobs:
         continue-on-error: true
         env:
           CI_SCRIPT: ${{ github.workspace }}/xdg/config/nvim/.github/ci/health.lua
-          CI_REPORT: ${{ github.workspace }}/health-report/${{ matrix.os }}-updated.txt
+          CI_REPORT: ${{ github.workspace }}/health-report/${{ matrix.name }}-updated.txt
         run: |
           set -euo pipefail
           nvim --headless -c "lua vim.pack.update(nil, { force = true })" -c "qa!"
@@ -205,7 +221,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: health-report-${{ matrix.os }}
+          name: health-report-${{ matrix.name }}
           path: |
             health-report/
           if-no-files-found: warn
